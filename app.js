@@ -151,7 +151,7 @@ function removeFeedbackClass(classText) {
 console.log(currentQuiz);
 submitBtn.addEventListener("click", () => {
   answerSelected = checkSelect();
-  if (currentQuiz <= quizQuestion.length - 1 && answerSelected) {
+  if (currentQuiz < quizQuestion.length && answerSelected) {
     //   Check if the answer is correnct or not
     answerBtn.forEach((element) => {
       // When Answer is correct ***************
@@ -178,13 +178,15 @@ submitBtn.addEventListener("click", () => {
       if (quizQuestion[currentQuiz].correct === element.dataset.answer) {
         setTimeout(() => {
           element.classList.add("correct");
-        }, 200);
+        }, 500);
       }
     });
 
     //   Change Quiz *****
     setTimeout(() => {
-      loadQuiz();
+      if (currentQuiz < quizQuestion.length) {
+        loadQuiz();
+      }
       answerBtn.forEach((btn) => {
         btn.classList.remove("selected");
         btn.classList.remove("correct");
@@ -196,15 +198,22 @@ submitBtn.addEventListener("click", () => {
       feedback.textContent = "Please choose a answer";
       removeFeedbackClass("correct");
       removeFeedbackClass("wrong");
-      console.log(currentQuiz);
-    }, 300);
+    }, 1500);
     currentQuiz++;
-  } else if (currentQuiz < quizQuestion.length - 1) {
-    gameFinish.classList.add("finish");
   } else {
     addFeedback();
     feedback.textContent = "Please choose a answer to continue";
     addFeedbackClass("warn");
   }
-  console.log(currentQuiz);
+  setTimeout(() => {
+    if (currentQuiz === quizQuestion.length) {
+      gameFinish.classList.add("finish");
+    }
+  }, 1500);
+});
+
+const reload = document.querySelector(".reload");
+
+reload.addEventListener("click", () => {
+  window.location.reload();
 });
