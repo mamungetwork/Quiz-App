@@ -1,3 +1,5 @@
+"use-strict";
+
 let quizQuestion = [
   {
     question: "What is the capital city of Bangladesh?",
@@ -84,18 +86,21 @@ let quizQuestion = [
 ];
 
 const questionText = document.querySelector(".main_question");
-const aText = document.querySelector(".a");
-const bText = document.querySelector(".b");
-const cText = document.querySelector(".c");
-const dText = document.querySelector(".d");
+const aText = document.querySelector(`[data-answer="a"]`);
+const bText = document.querySelector(`[data-answer="b"]`);
+const cText = document.querySelector(`[data-answer="c"]`);
+const dText = document.querySelector(`[data-answer="d"]`);
 const boardQuestion = document.querySelector(".question .number");
 const boardScore = document.querySelector(".score .number");
 const submitBtn = document.querySelector(".submit");
-const answereBtn = document.querySelectorAll(".answere");
+const answerBtn = document.querySelectorAll(".answer");
+const feedback = document.querySelector(".ans_feedback");
+const gameFinish = document.querySelector(".game_finish");
+const finalScore = document.querySelector(".final_number");
 
 let currentQuiz = 0;
 let currentScore = 0;
-let answereSelected = false;
+let answerSelected = false;
 
 loadQuiz();
 function loadQuiz() {
@@ -109,53 +114,97 @@ function loadQuiz() {
   boardQuestion.textContent = `${currentQuiz + 1}/${quizQuestion.length}`;
 }
 
-// Toggle Class when answere Selected
-answereBtn.forEach((btn) => {
+// Toggle Class when answer Selected
+answerBtn.forEach((btn) => {
   btn.addEventListener("click", () => {
-    answereBtn.forEach((btn) => {
+    answerBtn.forEach((btn) => {
       btn.classList.remove("selected");
     });
     btn.classList.add("selected");
+    // removeFeedback();
+    feedback.textContent = "Submit to find out if it's the right answer";
+    removeFeedbackClass("warn");
   });
 });
 
-//  Check if answere is Selected or not
+//  Check if answer is Selected or not
 function checkSelect() {
-  return Array.from(answereBtn).some(({ classList }) =>
+  return Array.from(answerBtn).some(({ classList }) =>
     classList.contains("selected")
   );
 }
 
+// Add or remove Feedback
+function addFeedback() {
+  feedback.style.display = "block";
+}
+function removeFeedback() {
+  feedback.style.display = "none";
+}
+function addFeedbackClass(classText) {
+  feedback.classList.add(`${classText}`);
+}
+function removeFeedbackClass(classText) {
+  feedback.classList.remove(`${classText}`);
+}
+
+console.log(currentQuiz);
 submitBtn.addEventListener("click", () => {
-  answereSelected = checkSelect();
-  if (currentQuiz < quizQuestion.length && answereSelected) {
-    console.log(currentQuiz);
-
-    //   Check if the answere is correnct or not
-    answereBtn.forEach((element) => {
+  answerSelected = checkSelect();
+  if (currentQuiz <= quizQuestion.length - 1 && answerSelected) {
+    //   Check if the answer is correnct or not
+    answerBtn.forEach((element) => {
+      // When Answer is correct ***************
+      element.style.pointerEvents = "none";
       if (element.classList.contains("selected")) {
-        // Get the class letter (assuming it's the only class)
-        const classLetter = element.classList[0];
-
-        // Check if the class letter exists as a key in yourObject
-        if (quizQuestion[currentQuiz].correct === classLetter) {
-          console.log("Correct");
+        if (quizQuestion[currentQuiz].correct === element.dataset.answer) {
+          element.classList.add("correct");
           currentScore++;
           boardScore.textContent = currentScore;
+          finalScore.textContent = currentScore;
+          submitBtn.style.pointerEvents = "none";
+          addFeedback();
+          addFeedbackClass("correct");
+          feedback.innerHTML = `<b>Great!</b> your answer is correct.`;
         } else {
-          console.log("Wrong");
+          // When Answer is wrong ***************
+          addFeedback();
+          addFeedbackClass("wrong");
+          element.classList.add("wrong");
+          feedback.innerHTML = `<b>Oops!</b> your answer is wrong.`;
         }
+      }
+      // Show the Correct answer
+      if (quizQuestion[currentQuiz].correct === element.dataset.answer) {
+        setTimeout(() => {
+          element.classList.add("correct");
+        }, 200);
       }
     });
 
     //   Change Quiz *****
     setTimeout(() => {
       loadQuiz();
-      answereBtn.forEach((btn) => {
+      answerBtn.forEach((btn) => {
         btn.classList.remove("selected");
+        btn.classList.remove("correct");
+        btn.classList.remove("wrong");
+        btn.style.pointerEvents = "auto";
       });
-    }, 1000);
+      submitBtn.style.pointerEvents = "auto";
+      // removeFeedback();
+      feedback.textContent = "Please choose a answer";
+      removeFeedbackClass("correct");
+      removeFeedbackClass("wrong");
+      console.log(currentQuiz);
+    }, 300);
     currentQuiz++;
+  } else if (currentQuiz < quizQuestion.length - 1) {
+    gameFinish.classList.add("finish");
   } else {
+    addFeedback();
+    feedback.textContent = "Please choose a answer to continue";
+    addFeedbackClass("warn");
   }
+  console.log(currentQuiz);
 });
