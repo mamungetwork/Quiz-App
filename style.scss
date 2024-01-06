@@ -45,11 +45,13 @@ main {
       font-size: 1rem;
       font-weight: 500;
       color: rgba(255, 255, 255, 0.7);
+      text-align: center;
     }
 
     .number {
       font-size: 2rem;
       color: rgb(255, 255, 255);
+      text-align: center;
     }
   }
 
@@ -176,16 +178,28 @@ main {
       justify-content: center;
       padding: 20px;
       border-radius: 8px;
+      text-align: center;
 
       .final_number {
         font-size: 4rem;
         color: rgb(82, 82, 212);
         font-weight: 700;
+        text-align: center;
       }
     }
   }
   .game_finish.finish {
     opacity: 1;
     transform: translateY(0%);
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .quiz_container {
+    padding: 16px;
+  }
+
+  main {
+    padding: 16px;
   }
 }
