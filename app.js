@@ -3,6 +3,7 @@
 let currentQuiz = 0;
 let currentScore = 0;
 let answerSelected = false;
+let quizData;
 
 const questionText = document.querySelector(".main_question");
 const aText = document.querySelector(`[data-answer="a"]`);
@@ -18,13 +19,14 @@ const gameFinish = document.querySelector(".game_finish");
 const finalScore = document.querySelector(".final_number");
 
 const apiUrl =
-  "https://opentdb.com/api.php?amount=50&difficulty=medium&type=multiple";
+  "https://opentdb.com/api.php?amount=50&category=9&difficulty=easy&type=multiple";
 
 fetch(apiUrl)
   .then((response) => response.json())
   .then((data) => {
     // Handle the array of questions in 'data.results'
-    // console.log(data.results);
+
+    quizData = data;
     getQuestion(data);
   })
   .catch((error) => {
@@ -34,6 +36,10 @@ fetch(apiUrl)
 let quizQuestion = [];
 
 function getQuestion(data) {
+  updateQuestion(data);
+  loadQuiz();
+}
+function updateQuestion(data) {
   quizQuestion = data.results;
   quizQuestion[currentQuiz].incorrect_answers.push(
     quizQuestion[currentQuiz].correct_answer
@@ -65,20 +71,16 @@ function getQuestion(data) {
         break;
     }
     if (quizQuestion[currentQuiz].correct_answer === option) {
-      console.log(index, option);
       quizQuestion[currentQuiz].correct = index;
     }
   });
-  console.log(quizQuestion[currentQuiz]);
-  loadQuiz();
 }
-
 function loadQuiz() {
-  questionText.textContent = quizQuestion[currentQuiz].question;
-  aText.textContent = quizQuestion[currentQuiz].a;
-  bText.textContent = quizQuestion[currentQuiz].b;
-  cText.textContent = quizQuestion[currentQuiz].c;
-  dText.textContent = quizQuestion[currentQuiz].d;
+  questionText.innerHTML = quizQuestion[currentQuiz].question;
+  aText.innerHTML = quizQuestion[currentQuiz].a;
+  bText.innerHTML = quizQuestion[currentQuiz].b;
+  cText.innerHTML = quizQuestion[currentQuiz].c;
+  dText.innerHTML = quizQuestion[currentQuiz].d;
 
   // Scoreboard ******
   boardQuestion.textContent = `${currentQuiz + 1}/${quizQuestion.length}`;
@@ -122,6 +124,7 @@ submitBtn.addEventListener("click", () => {
   answerSelected = checkSelect();
   if (currentQuiz < quizQuestion.length && answerSelected) {
     //   Check if the answer is correnct or not
+
     answerBtn.forEach((element) => {
       // When Answer is correct ***************
       element.style.pointerEvents = "none";
@@ -169,6 +172,7 @@ submitBtn.addEventListener("click", () => {
       removeFeedbackClass("wrong");
     }, 1500);
     currentQuiz++;
+    updateQuestion(quizData);
   } else {
     addFeedback();
     feedback.textContent = "Please choose a answer to continue";
