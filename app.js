@@ -31,7 +31,7 @@ fetch(apiUrl)
     console.error("Error fetching quiz questions:", error);
   });
 
-let quizQuestion;
+let quizQuestion = [];
 
 function getQuestion(data) {
   quizQuestion = data.results;
@@ -83,6 +83,19 @@ function loadQuiz() {
   // Scoreboard ******
   boardQuestion.textContent = `${currentQuiz + 1}/${quizQuestion.length}`;
 }
+
+// Toggle Class when answer Selected
+answerBtn.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    answerBtn.forEach((btn) => {
+      btn.classList.remove("selected");
+    });
+    btn.classList.add("selected");
+    // removeFeedback();
+    feedback.textContent = "Submit to find out if it's the right answer";
+    removeFeedbackClass("warn");
+  });
+});
 
 //  Check if answer is Selected or not
 function checkSelect() {
